@@ -2,7 +2,7 @@
 # coding: utf-8
 
 from time import time
-
+import os
 import argparse
 
 import pandas as pd
@@ -18,9 +18,13 @@ def main(params):
     table = params.table
     csv_url = params.csv_url
     
-    engine = create_engine(f'postgresql://{{user}}:root@localhost:5432/ny_taxi')
+    csv_name = 'output.csv'
+    
+    os.system(f'wget {csv_url} -O {csv_name}')
+    
+    engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}5432/{db}')
 
-    df_iter = pd.read_csv('green_tripdata_2019-09.csv.gz', iterator=True, chunksize=100000)
+    df_iter = pd.read_csv(csv_name, iterator=True, chunksize=100000)
 
 
     df = next(df_iter)
@@ -30,9 +34,9 @@ def main(params):
     df.lpep_dropoff_datetime = pd.to_datetime(df.lpep_dropoff_datetime)
 
 
-    df.head(n=0).to_sql(name='green_taxi_data', con=engine, if_exists='replace')
+    df.head(n=0).to_sql(name= table, con=engine, if_exists='replace')
 
-    df.to_sql(name='green_taxi_data', con=engine, if_exists='append')
+    df.to_sql(name= table, con=engine, if_exists='append')
 
 
     while True: 
@@ -48,51 +52,24 @@ def main(params):
         t_end = time()
 
         print('inserted another chunk, took %.3f second' % (t_end - t_start))
+
+if __name__ == '__main__':
     
-parser = argparse.ArgumentParser(description='Ingesting CSV data into DB green_taxi')
+    parser = argparse.ArgumentParser(description='Ingesting CSV data into DB green_taxi')
 
-#user, password, host, password
-parser.add_argument('user', help='user name for postgres')
-parser.add_argument('password', help='password for postgres')
-parser.add_argument('host', help='host for postgres')
-parser.add_argument('port', help='port for postgres')
-parser.add_argument('db', help='db name for postgres')
-parser.add_argument('table', help='table name for postgres')
-parser.add_argument('csv_url', help='CSV url for ingest')
+    #user, password, host, password
+    parser.add_argument('--user', help='user name for postgres')
+    parser.add_argument('--password', help='password for postgres')
+    parser.add_argument('--host', help='host for postgres')
+    parser.add_argument('--port', help='port for postgres')
+    parser.add_argument('--db', help='db name for postgres')
+    parser.add_argument('--table', help='table name for postgres')
+    parser.add_argument('--csv_url', help='CSV url for ingest')
 
-args = parser.parse_args()
-print(args.accumulate(args.integers))
-
-engine = create_engine('postgresql://root:root@localhost:5432/ny_taxi')
-
-df_iter = pd.read_csv('green_tripdata_2019-09.csv.gz', iterator=True, chunksize=100000)
-
-
-df = next(df_iter)
-
-
-df.lpep_pickup_datetime = pd.to_datetime(df.lpep_pickup_datetime)
-df.lpep_dropoff_datetime = pd.to_datetime(df.lpep_dropoff_datetime)
-
-
-df.head(n=0).to_sql(name='green_taxi_data', con=engine, if_exists='replace')
-
-df.to_sql(name='green_taxi_data', con=engine, if_exists='append')
-
-
-while True: 
-    t_start = time()
-
-    df = next(df_iter)
-
-    df.lpep_pickup_datetime = pd.to_datetime(df.lpep_pickup_datetime)
-    df.lpep_dropoff_datetime = pd.to_datetime(df.lpep_dropoff_datetime)
+    args = parser.parse_args()
     
-    df.to_sql(name='green_taxi_data', con=engine, if_exists='append')
+    main(args)
 
-    t_end = time()
-
-    print('inserted another chunk, took %.3f second' % (t_end - t_start))
 
 
 
