@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Data Engineering Zoomcamp
 
 
@@ -218,3 +219,7 @@ Do you want to support our course and our community? Please reach out to [alexey
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=DataTalksClub/data-engineering-zoomcamp&type=Date)](https://star-history.com/#DataTalksClub/data-engineering-zoomcamp&Date)
+=======
+# dezoomcamp2024
+Publish homework in here
+>>>>>>> 88678236246ac3f3d9c5ce2e40e3197e07b36cc7
