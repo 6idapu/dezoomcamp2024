@@ -1,0 +1,12 @@
+triggers:
+- envs: []
+  last_enabled_at: 2024-02-09 17:50:46.487066
+  name: start at 5am
+  pipeline_uuid: data_to_yandexcloud
+  schedule_interval: '@daily'
+  schedule_type: time
+  settings: null
+  sla: null
+  start_time: 2024-02-10 05:00:00
+  status: active
+  variables: {}
